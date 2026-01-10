@@ -2,45 +2,178 @@
 <html>
 <head>
     <title>AI Vision Assistant</title>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(135deg, #eef2ff, #f0fdf4);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 60px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 18px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.8rem;
+            color: #4f46e5;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        /* ---------- INPUT ---------- */
+        input[type="file"] {
+            display: block;
+            margin: 0 auto;
+            font-size: 16px;
+        }
+
+        /* ---------- BUTTONS ---------- */
+        button {
+            width: 100%;
+            padding: 18px;
+            margin-top: 20px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .analyze-btn {
+            background: #22c55e;
+            color: white;
+        }
+
+        .play-btn {
+            background: #f59e0b;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        /* ---------- RESULT ---------- */
+        #result {
+            margin-top: 25px;
+            font-size: 1.1rem;
+            background: #f8fafc;
+            padding: 20px;
+            border-left: 6px solid #4f46e5;
+            border-radius: 10px;
+            min-height: 60px;
+        }
+
+        /* ---------- INFO ---------- */
+        .info {
+            margin-top: 35px;
+            display: grid;
+            gap: 15px;
+        }
+
+        .info div {
+            background: #f8fafc;
+            padding: 18px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+    </style>
 </head>
+
 <body>
 
-<h1>AI Vision Assistant</h1>
+<div class="container">
 
-<input type="file" id="imageInput" accept="image/*">
-<br><br>
+    <h1>AI Vision Assistant</h1>
+    <p class="subtitle">
+        Helping visually impaired users understand images through clear descriptions and voice.
+    </p>
 
-<button onclick="sendImage()">Describe Image</button>
+    <input type="file" id="imageInput" accept="image/*">
 
-<p id="result"></p>
+    <button class="analyze-btn" onclick="analyzeImage()">
+        🔍 Analyze Image
+    </button>
+
+    <button class="play-btn" onclick="speakText()">
+        🔊 Play Description
+    </button>
+
+    <p id="result">Waiting for image...</p>
+
+    <div class="info">
+        <div>
+            <strong>🎯 Goal</strong><br>
+            Convert images into simple, understandable spoken descriptions.
+        </div>
+        <div>
+            <strong>🧠 How it works</strong><br>
+            Upload an image → Analyze → Listen to the description.
+        </div>
+        <div>
+            <strong>♿ Accessibility</strong><br>
+            Large buttons, clean layout, and browser-based voice output.
+        </div>
+    </div>
+
+    <footer>
+        Snapshot-based AI • Hackathon-ready • Accessibility-focused
+    </footer>
+
+</div>
 
 <script>
-async function sendImage() {
-    const fileInput = document.getElementById("imageInput");
+async function analyzeImage() {
+    const input = document.getElementById("imageInput");
     const result = document.getElementById("result");
 
-    if (!fileInput.files.length) {
-        alert("Please select an image first");
+    if (!input.files.length) {
+        alert("Please choose an image");
         return;
     }
 
     const formData = new FormData();
-    formData.append("image", fileInput.files[0]);
+    formData.append("image", input.files[0]);
 
     result.innerText = "Analyzing image...";
 
-    try {
-        const response = await fetch("http://localhost:5000/upload", {
-            method: "POST",
-            body: formData
-        });
+    const response = await fetch("http://127.0.0.1:5000/upload", {
+        method: "POST",
+        body: formData
+    });
 
-        const data = await response.json();
-        result.innerText = data.description || data.error;
+    const data = await response.json();
+    result.innerText = data.description || data.error;
+}
 
-    } catch (err) {
-        result.innerText = "Request failed";
-    }
+function speakText() {
+    const text = document.getElementById("result").innerText;
+    if (!text || text.includes("Waiting")) return;
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-US";
+    speechSynthesis.speak(utterance);
 }
 </script>
 

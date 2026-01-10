@@ -1,10 +1,4 @@
-# Python cache
+.env
 __pycache__/
 *.pyc
-
-# Environment secrets
-.env
-
-# OS files
-.DS_Store
-Thumbs.db
+backend/audio/
