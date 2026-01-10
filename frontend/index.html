@@ -9,30 +9,38 @@
 
 <input type="file" id="imageInput" accept="image/*">
 <br><br>
-<button onclick="sendImage()">Send Image to Backend</button>
 
-<p id="response"></p>
+<button onclick="sendImage()">Describe Image</button>
+
+<p id="result"></p>
 
 <script>
 async function sendImage() {
     const fileInput = document.getElementById("imageInput");
-    const responseText = document.getElementById("response");
+    const result = document.getElementById("result");
 
     if (!fileInput.files.length) {
-        alert("Please select an image");
+        alert("Please select an image first");
         return;
     }
 
     const formData = new FormData();
     formData.append("image", fileInput.files[0]);
 
-    const response = await fetch("http://127.0.0.1:5000/upload", {
-        method: "POST",
-        body: formData
-    });
+    result.innerText = "Analyzing image...";
 
-    const data = await response.json();
-    responseText.innerText = data.message || data.error;
+    try {
+        const response = await fetch("http://localhost:5000/upload", {
+            method: "POST",
+            body: formData
+        });
+
+        const data = await response.json();
+        result.innerText = data.description || data.error;
+
+    } catch (err) {
+        result.innerText = "Request failed";
+    }
 }
 </script>
 
