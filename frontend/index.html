@@ -67,6 +67,19 @@
             opacity: 0.9;
         }
 
+        /* ---------- IMAGE PREVIEW ---------- */
+        #preview {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        #preview img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+
         /* ---------- RESULT ---------- */
         #result {
             margin-top: 25px;
@@ -112,6 +125,9 @@
 
     <input type="file" id="imageInput" accept="image/*">
 
+    <!-- IMAGE PREVIEW -->
+    <div id="preview"></div>
+
     <button class="analyze-btn" onclick="analyzeImage()">
         🔍 Analyze Image
     </button>
@@ -144,6 +160,19 @@
 </div>
 
 <script>
+// -------- IMAGE PREVIEW (NEW, SAFE ADDITION) --------
+document.getElementById("imageInput").addEventListener("change", function () {
+    const preview = document.getElementById("preview");
+    preview.innerHTML = "";
+
+    if (this.files && this.files[0]) {
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(this.files[0]);
+        preview.appendChild(img);
+    }
+});
+
+// -------- EXISTING LOGIC (UNCHANGED) --------
 async function analyzeImage() {
     const input = document.getElementById("imageInput");
     const result = document.getElementById("result");
